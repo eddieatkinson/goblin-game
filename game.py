@@ -82,8 +82,12 @@ keys_down = {
 	"right": False
 }
 
-# Function for disabling the keys (setting them to "0")
-def kill_keys(n):
+# Losing function. Disables the keys (setting them to "0")
+def lost(n):
+	hero["status"] = "YOU LOST!!"
+	pygame.mixer.music.stop()
+	pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/loser.wav'))
+
 	keys_down["up"] = False # Ensures the 'hero' stops moving
 	keys_down["down"] = False
 	keys_down["right"] = False
@@ -157,41 +161,23 @@ while game_on:
 		hero['x'] -= hero['speed']
 
 	# Random monster movement
-	for i in range (0, random.randint(1, 4) * 5000):
-		move_var = random.randint(1, 4)
-		if (i % 30 == 0):
-			if (move_var == 1):
-				monster['x'] += monster["speed"]
-				monster['y'] += monster["speed"]
-				# if (monster['x'] > screen_width - img_dim): # If he hits the sides
-				# 	move_var = 2
-				# elif (monster['y'] > screen_width - img_dim):
-				# 	move_var = 3
-			elif (move_var == 2):
-				monster['x'] -= monster["speed"]
-				monster['y'] += monster["speed"]
-				# if (monster['x'] < 0):
-				# 	move_var = 1
-				# elif (monster['y'] > screen_width - img_dim):
-				# 	move_var = 4
-			elif (move_var == 3):
-				monster['x'] += monster["speed"]
-				monster['y'] -= monster["speed"]
-				# if (monster['x'] > screen_width - img_dim):
-				# 	move_var = 4
-				# elif (monster['y'] < 0):
-				# 	move_var = 1
-			elif (move_var == 4):
-				monster['x'] -= monster["speed"]
-				monster['y'] -= monster["speed"]
-				# if (monster['x'] < 0):
-				# 	move_var = 3
-				# elif (monster['y'] < 0):
-				# 	move_var = 2
-
-
-	
-
+	move_var = random.randint(1, 4)
+	for i in range (0, random.randint(1, 4) * 7):
+		
+		print move_var
+		# if (i % 30 == 0):
+		if (move_var == 1):
+			monster['x'] += monster["speed"]
+			monster['y'] += monster["speed"]
+		elif (move_var == 2):
+			monster['x'] -= monster["speed"]
+			monster['y'] += monster["speed"]
+		elif (move_var == 3):
+			monster['x'] += monster["speed"]
+			monster['y'] -= monster["speed"]
+		elif (move_var == 4):
+			monster['x'] -= monster["speed"]
+			monster['y'] -= monster["speed"]
 
 		#	if (monster["x"] > screen_width - img_dim):
 		 # 		monster["x"] -= monster["speed"]
@@ -262,18 +248,17 @@ while game_on:
 		goblin['y'] = random.randint(0, screen_height - img_dim)
 	# If "monster" gets us...
 	distance_between = fabs(hero['x'] - monster['x']) + fabs(hero['y'] - monster['y'])
-	if (distance_between < img_dim):
-		hero["status"] = "YOU LOST!!"
-		kill_keys(0)
+	if (distance_between < img_dim and keys["up"] == 273):
+		# 'keys["up"] == 273' ensures it doesn't keep saying "Ouch"
 		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/eat.wav'))
+		lost(0)
+		
 	# If "enemy" gets us...
 	distance_between = fabs(hero['x'] - enemy['x']) + fabs(hero['y'] - enemy['y'])
 	if (distance_between < img_dim and hero["wins"] > 3 and keys["up"] == 273):
 		# 'keys["up"] == 273' ensures it doesn't keep saying "Ouch"
-		# pygame.mixer.music.stop()
 		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/ouch.wav'))
-		hero["status"] = "YOU LOST!!"
-		kill_keys(0)
+		lost(0)
 		# game_on = False
 		# print "YOU LOSE!!!"
 	# Borders! Continues across to opposite side of screen.
