@@ -82,11 +82,18 @@ keys_down = {
 	"right": False
 }
 
-# def game_over():
-# 	hero["status"] = "YOU LOST!!"
+# Function for disabling the keys (setting them to "0")
+def kill_keys(n):
+	keys_down["up"] = False # Ensures the 'hero' stops moving
+	keys_down["down"] = False
+	keys_down["right"] = False
+	keys_down["left"] = False
+	keys["up"] = 0
+	keys["down"] = 0
+	keys["right"] = 0
+	keys["left"] = 0
 
-
-# counter = 0
+# counter = 0 # For random "goblin"
 # 4. Create a game loop (while)
 # Create a boolean for whether the game should be going on
 game_on = True
@@ -150,9 +157,9 @@ while game_on:
 		hero['x'] -= hero['speed']
 
 	# Random monster movement
-	for i in range (0, random.randint(1, 4) * 500):
+	for i in range (0, random.randint(1, 4) * 5000):
 		move_var = random.randint(1, 4)
-		if (i % 3 == 0):
+		if (i % 30 == 0):
 			if (move_var == 1):
 				monster['x'] += monster["speed"]
 				monster['y'] += monster["speed"]
@@ -257,13 +264,16 @@ while game_on:
 	distance_between = fabs(hero['x'] - monster['x']) + fabs(hero['y'] - monster['y'])
 	if (distance_between < img_dim):
 		hero["status"] = "YOU LOST!!"
+		kill_keys(0)
 		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/eat.wav'))
 	# If "enemy" gets us...
 	distance_between = fabs(hero['x'] - enemy['x']) + fabs(hero['y'] - enemy['y'])
-	if (distance_between < img_dim and hero["wins"] > 3):
+	if (distance_between < img_dim and hero["wins"] > 3 and keys["up"] == 273):
+		# 'keys["up"] == 273' ensures it doesn't keep saying "Ouch"
 		# pygame.mixer.music.stop()
 		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/ouch.wav'))
 		hero["status"] = "YOU LOST!!"
+		kill_keys(0)
 		# game_on = False
 		# print "YOU LOSE!!!"
 	# Borders! Continues across to opposite side of screen.
@@ -308,7 +318,7 @@ while game_on:
 	pygame_screen.blit(wins_text, [40, 40])
 	font2 = pygame.font.Font(None, 72)
 	lose_text = font2.render("%s" % (hero["status"]), True, (0, 0, 0))
-	pygame_screen.blit(lose_text, [110, 100])
+	pygame_screen.blit(lose_text, [170, 200])
 	
 
 	pygame_screen.blit(hero_image, [hero["x"], hero["y"]])
