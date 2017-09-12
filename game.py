@@ -4,9 +4,16 @@ import pygame
 # From the math module (built into python), get the fabs module (absolute value)
 from math import fabs
 import random
+#pygame.mixer.pre_init(44100, 16, 2, 4096) # For background music
 # 2. Init pygame
 # in order to use pygame, we have to run the init method
 pygame.init()
+# Background music
+# ouch = pygame.mixer.Sound('goblin_sounds/ouch.wav')
+# eat = pygame.mixer.Sound('goblin_sounds/eat.wav')
+pygame.mixer.music.load('goblin_sounds/happy.mp3') # Background music
+# pygame.mixer.music.set_volume(0.5) # Medium volume (goes up to 1)
+
 
 # 3. Create a screen with a particular size
 screen_width = 600
@@ -19,11 +26,19 @@ pygame_screen = pygame.display.set_mode(screen_size)
 # Set a pointless caption
 pygame.display.set_caption("Goblin Chase")
 
+
+
 # Set up a var with our image
 background_image = pygame.image.load('goblin_images/leg_hair.jpg')
 hero_image = pygame.image.load('goblin_images/fred.png')
 goblin_image = pygame.image.load('goblin_images/flea.png')
 monster_image = pygame.image.load('goblin_images/tick.png')
+enemy_image = pygame.image.load('goblin_images/gene.jpg')
+
+
+
+
+
 img_dim = 40 # Size of icons
 
 # Dictionaries!
@@ -47,6 +62,12 @@ monster = {
 	"speed": 1
 }
 
+enemy = {
+	"x": 100,
+	"y": 100,
+	"speed": 1
+}
+
 keys = {
 	"up": 273,
 	"down": 274,
@@ -61,12 +82,15 @@ keys_down = {
 	"right": False
 }
 
+# def game_over():
+# 	hero["status"] = "YOU LOST!!"
 
 
 # counter = 0
 # 4. Create a game loop (while)
 # Create a boolean for whether the game should be going on
 game_on = True
+pygame.mixer.music.play(-1) # Loop it
 while game_on:
 	# We are inside the main game loop.
 	# It will keep running as long as our bool is true
@@ -126,37 +150,42 @@ while game_on:
 		hero['x'] -= hero['speed']
 
 	# Random monster movement
-	for i in range (0, random.randint(1, 4) * 5000):
+	for i in range (0, random.randint(1, 4) * 500):
 		move_var = random.randint(1, 4)
-		if (i % 10 == 0):
+		if (i % 3 == 0):
 			if (move_var == 1):
 				monster['x'] += monster["speed"]
 				monster['y'] += monster["speed"]
-				if (monster['x'] > screen_width - img_dim): # If he hits the sides
-					move_var = 2
-				elif (monster['y'] > screen_width - img_dim):
-					move_var = 3
+				# if (monster['x'] > screen_width - img_dim): # If he hits the sides
+				# 	move_var = 2
+				# elif (monster['y'] > screen_width - img_dim):
+				# 	move_var = 3
 			elif (move_var == 2):
 				monster['x'] -= monster["speed"]
 				monster['y'] += monster["speed"]
-				if (monster['x'] < 0):
-					move_var = 1
-				elif (monster['y'] > screen_width - img_dim):
-					move_var = 4
+				# if (monster['x'] < 0):
+				# 	move_var = 1
+				# elif (monster['y'] > screen_width - img_dim):
+				# 	move_var = 4
 			elif (move_var == 3):
 				monster['x'] += monster["speed"]
 				monster['y'] -= monster["speed"]
-				if (monster['x'] > screen_width - img_dim):
-					move_var = 4
-				elif (monster['y'] < 0):
-					move_var = 1
+				# if (monster['x'] > screen_width - img_dim):
+				# 	move_var = 4
+				# elif (monster['y'] < 0):
+				# 	move_var = 1
 			elif (move_var == 4):
 				monster['x'] -= monster["speed"]
 				monster['y'] -= monster["speed"]
-				if (monster['x'] < 0):
-					move_var = 3
-				elif (monster['y'] < 0):
-					move_var = 2
+				# if (monster['x'] < 0):
+				# 	move_var = 3
+				# elif (monster['y'] < 0):
+				# 	move_var = 2
+
+
+	
+
+
 		#	if (monster["x"] > screen_width - img_dim):
 		 # 		monster["x"] -= monster["speed"]
 		 # 	if (monster["x"] < 0):
@@ -215,14 +244,25 @@ while game_on:
 	#	monst_move = False
 	# COLLISION DETECTION
 	distance_between = fabs(hero['x'] - goblin['x']) + fabs(hero['y'] - goblin['y'])
-	if (distance_between < img_dim):
+	if (distance_between < img_dim): # Goal
 		hero["wins"] += 1
-		hero["speed"] += 1
+		hero["speed"] += 1.2
 		monster["speed"] += .1
+		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/oh_yeah.wav'))
+		if (hero["wins"] > 4):
+			enemy["speed"] += 1
 		goblin['x'] = random.randint(0, screen_width - img_dim)
 		goblin['y'] = random.randint(0, screen_height - img_dim)
+	# If "monster" gets us...
 	distance_between = fabs(hero['x'] - monster['x']) + fabs(hero['y'] - monster['y'])
 	if (distance_between < img_dim):
+		hero["status"] = "YOU LOST!!"
+		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/eat.wav'))
+	# If "enemy" gets us...
+	distance_between = fabs(hero['x'] - enemy['x']) + fabs(hero['y'] - enemy['y'])
+	if (distance_between < img_dim and hero["wins"] > 3):
+		# pygame.mixer.music.stop()
+		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/ouch.wav'))
 		hero["status"] = "YOU LOST!!"
 		# game_on = False
 		# print "YOU LOSE!!!"
@@ -274,6 +314,21 @@ while game_on:
 	pygame_screen.blit(hero_image, [hero["x"], hero["y"]])
 	pygame_screen.blit(goblin_image, [goblin["x"], goblin["y"]])
 	pygame_screen.blit(monster_image, [monster["x"], monster["y"]])
+
+	# Enemy chases us!
+	# This is down here so the "enemy" image shows up over the background.
+	if (hero["wins"] > 3):
+		pygame_screen.blit(enemy_image, [enemy["x"], enemy["y"]])
+		if enemy["x"] < hero["x"]:
+			enemy["x"] += enemy["speed"]
+		else:
+			enemy["x"] -= enemy["speed"]
+		if enemy["y"] < hero["y"]:
+			enemy["y"] += enemy["speed"]
+		else:
+			enemy["y"] -= enemy["speed"]
+	
+	
 
 
 # 7. Repeat 6 over and over...
