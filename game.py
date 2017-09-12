@@ -9,8 +9,9 @@ import random
 # in order to use pygame, we have to run the init method
 pygame.init()
 # Background music
-# ouch = pygame.mixer.Sound('goblin_sounds/ouch.wav')
-# eat = pygame.mixer.Sound('goblin_sounds/eat.wav')
+yeah = pygame.mixer.Sound('goblin_sounds/oh_yeah.wav')
+ouch = pygame.mixer.Sound('goblin_sounds/ouch.wav')
+eat = pygame.mixer.Sound('goblin_sounds/eat.wav')
 pygame.mixer.music.load('goblin_sounds/happy.mp3') # Background music
 # pygame.mixer.music.set_volume(0.5) # Medium volume (goes up to 1)
 
@@ -97,7 +98,6 @@ def lost(n):
 	keys["right"] = 0
 	keys["left"] = 0
 
-# counter = 0 # For random "goblin"
 # 4. Create a game loop (while)
 # Create a boolean for whether the game should be going on
 game_on = True
@@ -129,15 +129,6 @@ while game_on:
 			elif event.key == keys["left"]:
 				# hero['x'] -= hero['speed']
 				keys_down['left'] = True
-			# else:
-			# 	if (screen_height < hero['y']):
-			# 		hero['y'] -= img_dim
-			# 	elif (0 > hero['y']):
-			# 		hero['y'] += img_dim
-			# 	elif (screen_width < hero['x']):
-			# 		hero['x'] -= img_dim
-			# 	elif (0 > hero['x']):
-			# 		hero['x'] += img_dim
 
 		elif event.type == pygame.KEYUP:
 			if event.key == keys['up']:
@@ -164,7 +155,7 @@ while game_on:
 	move_var = random.randint(1, 4)
 	for i in range (0, random.randint(1, 4) * 7):
 		
-		print move_var
+		#print move_var
 		# if (i % 30 == 0):
 		if (move_var == 1):
 			monster['x'] += monster["speed"]
@@ -237,58 +228,50 @@ while game_on:
 	#	monst_move = False
 	# COLLISION DETECTION
 	distance_between = fabs(hero['x'] - goblin['x']) + fabs(hero['y'] - goblin['y'])
-	if (distance_between < img_dim): # Goal
+	# If we get the "goblin"
+	if (distance_between < img_dim):
 		hero["wins"] += 1
 		hero["speed"] += 1.2
 		monster["speed"] += .1
-		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/oh_yeah.wav'))
+		pygame.mixer.Sound.play(yeah) # pygame.mixer.Sound('goblin_sounds/oh_yeah.wav'))
 		if (hero["wins"] > 4):
 			enemy["speed"] += 1
 		goblin['x'] = random.randint(0, screen_width - img_dim)
 		goblin['y'] = random.randint(0, screen_height - img_dim)
+	
 	# If "monster" gets us...
 	distance_between = fabs(hero['x'] - monster['x']) + fabs(hero['y'] - monster['y'])
 	if (distance_between < img_dim and keys["up"] == 273):
 		# 'keys["up"] == 273' ensures it doesn't keep saying "Ouch"
-		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/eat.wav'))
+		pygame.mixer.Sound.play(eat) # pygame.mixer.Sound('goblin_sounds/eat.wav'))
 		lost(0)
 		
 	# If "enemy" gets us...
 	distance_between = fabs(hero['x'] - enemy['x']) + fabs(hero['y'] - enemy['y'])
 	if (distance_between < img_dim and hero["wins"] > 3 and keys["up"] == 273):
 		# 'keys["up"] == 273' ensures it doesn't keep saying "Ouch"
-		pygame.mixer.Sound.play(pygame.mixer.Sound('goblin_sounds/ouch.wav'))
+		pygame.mixer.Sound.play(ouch) # pygame.mixer.Sound('goblin_sounds/ouch.wav'))
 		lost(0)
 		# game_on = False
 		# print "YOU LOSE!!!"
 	# Borders! Continues across to opposite side of screen.
 	if (hero['y'] > screen_height - img_dim):
 		hero['y'] = 0
-		# keys_down['down'] = False
 	elif (hero['y'] < 0):
 		hero['y'] = screen_height - img_dim
-		# keys_down['up'] = False
 	if (hero['x'] > screen_width - img_dim):
 		hero['x'] = 0
-		# keys_down['right'] = False
 	elif (hero['x'] < 0):
 		hero['x'] = screen_width - img_dim
 
 	if (monster['y'] > screen_height - img_dim):
 		monster['y'] = 0
-		# keys_down['down'] = False
 	elif (monster['y'] < 0):
 		monster['y'] = screen_height - img_dim
-		# keys_down['up'] = False
 	if (monster['x'] > screen_width - img_dim):
 		monster['x'] = 0
-		# keys_down['right'] = False
 	elif (monster['x'] < 0):
 		monster['x'] = screen_width - img_dim
-		# keys_down['left'] = False
-
-	# else:
-	#	print "not touching"
 
 # 6. Fill in the screen with a color (or image)
 	# ACTUALLY RENDER SOMETHING
@@ -328,6 +311,3 @@ while game_on:
 
 # 7. Repeat 6 over and over...
 	pygame.display.flip()
-	# counter += 1
-	# if (counter % 30 == 0):
-	# 	print counter
