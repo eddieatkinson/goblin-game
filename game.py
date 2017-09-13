@@ -60,7 +60,7 @@ goblin = {
 monster = {
 	"x": 250,
 	"y": 250,
-	"speed": 1
+	"speed": .1
 }
 
 enemy = {
@@ -152,23 +152,30 @@ while game_on:
 		hero['x'] -= hero['speed']
 
 	# Random monster movement
-	move_var = random.randint(1, 4)
-	for i in range (0, random.randint(1, 4) * 7):
-		
-		#print move_var
-		# if (i % 30 == 0):
-		if (move_var == 1):
-			monster['x'] += monster["speed"]
-			monster['y'] += monster["speed"]
-		elif (move_var == 2):
-			monster['x'] -= monster["speed"]
-			monster['y'] += monster["speed"]
-		elif (move_var == 3):
-			monster['x'] += monster["speed"]
-			monster['y'] -= monster["speed"]
-		elif (move_var == 4):
-			monster['x'] -= monster["speed"]
-			monster['y'] -= monster["speed"]
+	move_var = random.randint(1, 8)
+	dur_var = random.randint(1, 4)
+	for i in range (0, dur_var * 500):
+		if (i % 30 == 0):
+			if (move_var == 1):
+				monster['x'] += monster["speed"]
+				monster['y'] += monster["speed"]
+			elif (move_var == 2):
+				monster['x'] -= monster["speed"]
+				monster['y'] += monster["speed"]
+			elif (move_var == 3):
+				monster['x'] += monster["speed"]
+				monster['y'] -= monster["speed"]
+			elif (move_var == 4):
+				monster['x'] -= monster["speed"]
+				monster['y'] -= monster["speed"]
+			elif (move_var == 5):
+				monster['x'] += monster["speed"]
+			elif (move_var == 6):
+				monster['x'] -= monster["speed"]
+			elif (move_var == 7):
+				monster['y'] -= monster["speed"]
+			elif (move_var == 8):
+				monster['y'] += monster["speed"]
 
 		#	if (monster["x"] > screen_width - img_dim):
 		 # 		monster["x"] -= monster["speed"]
@@ -231,7 +238,7 @@ while game_on:
 	# If we get the "goblin"
 	if (distance_between < img_dim):
 		hero["wins"] += 1
-		hero["speed"] += 1.2
+		hero["speed"] += 1.1
 		monster["speed"] += .1
 		pygame.mixer.Sound.play(yeah) # pygame.mixer.Sound('goblin_sounds/oh_yeah.wav'))
 		if (hero["wins"] > 4):
@@ -299,11 +306,11 @@ while game_on:
 		pygame_screen.blit(enemy_image, [enemy["x"], enemy["y"]])
 		if enemy["x"] < hero["x"]:
 			enemy["x"] += enemy["speed"]
-		else:
+		elif enemy["x"] > hero["x"]:
 			enemy["x"] -= enemy["speed"]
 		if enemy["y"] < hero["y"]:
 			enemy["y"] += enemy["speed"]
-		else:
+		elif enemy["y"] > hero["y"]:
 			enemy["y"] -= enemy["speed"]
 	
 	
