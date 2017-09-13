@@ -2,7 +2,7 @@
 # 	Include pygame which we got from pip:
 import pygame
 # From the math module (built into python), get the fabs module (absolute value)
-from math import fabs
+from math import fabs, hypot
 import random
 #pygame.mixer.pre_init(44100, 16, 2, 4096) # For background music
 # 2. Init pygame
@@ -60,7 +60,9 @@ goblin = {
 monster = {
 	"x": 250,
 	"y": 250,
-	"speed": .1
+	"speed": 5,
+	"dx": 1,
+	"dy": 1
 }
 
 enemy = {
@@ -98,6 +100,7 @@ def lost(n):
 	keys["right"] = 0
 	keys["left"] = 0
 
+tick = 0 # For "monster" movement
 # 4. Create a game loop (while)
 # Create a boolean for whether the game should be going on
 game_on = True
@@ -141,7 +144,7 @@ while game_on:
 			if event.key == keys['left']:
 				keys_down['left'] = False
 
-
+	#This is how we move around.
 	if keys_down['up']:
 		hero['y'] -= hero['speed']
 	elif keys_down['down']:
@@ -152,87 +155,16 @@ while game_on:
 		hero['x'] -= hero['speed']
 
 	# Random monster movement
-	move_var = random.randint(1, 8)
-	dur_var = random.randint(1, 4)
-	for i in range (0, dur_var * 500):
-		if (i % 30 == 0):
-			if (move_var == 1):
-				monster['x'] += monster["speed"]
-				monster['y'] += monster["speed"]
-			elif (move_var == 2):
-				monster['x'] -= monster["speed"]
-				monster['y'] += monster["speed"]
-			elif (move_var == 3):
-				monster['x'] += monster["speed"]
-				monster['y'] -= monster["speed"]
-			elif (move_var == 4):
-				monster['x'] -= monster["speed"]
-				monster['y'] -= monster["speed"]
-			elif (move_var == 5):
-				monster['x'] += monster["speed"]
-			elif (move_var == 6):
-				monster['x'] -= monster["speed"]
-			elif (move_var == 7):
-				monster['y'] -= monster["speed"]
-			elif (move_var == 8):
-				monster['y'] += monster["speed"]
+	if tick % 20 == 0: # To make movement more smooth.
+	# change directions!
+		monster['dx'] = random.randint(-1, 1)
+		monster['dy'] = random.randint(-1, 1)
 
-		#	if (monster["x"] > screen_width - img_dim):
-		 # 		monster["x"] -= monster["speed"]
-		 # 	if (monster["x"] < 0):
-			# 	monster["x"] += monster["speed"]
-			# if (monster["y"] > screen_height - img_dim):
-			# 	monster["y"] -= monster["speed"]
-			# if (monster["y"] < 0):
-			# 	monster["y"] += monster["speed"]
-	# 	print counter
-	# 	counter += 1
-	# counter = 0
-		# if (monster["x"] < screen_width - img_dim):
-		# 	if (monster["y"] < screen_height - img_dim):
-		# 		monster["x"] += monster["speed"]
-		# 		monster["y"] += monster["speed"]
-		# 	else:
-		# 		monster["y"] -= monster["speed"]
-		# else:
-		# 	monster["x"] -= monster["speed"]
-	# monst_move = True
-	# while monst_move:
+	monster['x'] += monster['dx'] * monster["speed"]
+	monster['y'] += monster['dy'] * monster["speed"]
+
+	tick += 1
 	
-		# if (counter < random.randint(1, 4) * 60):
-		# # monst_x = random.randint(1, 2)
-		# # if monst_x == 1:
-		#  	monster["x"] += monster["speed"]
-		# # elif monst_x == 2:
-		# # 	monster["x"] -= monster["speed"]
-		# # monst_y = random.randint(1, 2)
-		# # if monst_y == 1:
-		#  	monster["y"] += monster["speed"]
-		# # elif monst_y == 2:
-		# # 	monster["y"] -= monster["speed"]
-		# # if (monster["x"] > screen_width - img_dim):
-		# # 	monster["x"] -= monster["speed"]
-		# # if (monster["x"] < 0):
-		# # 	monster["x"] += monster["speed"]
-		# # if (monster["y"] > screen_height - img_dim):
-		# # 	monster["y"] -= monster["speed"]
-		# # if (monster["y"] < 0):
-		# # 	monster["y"] += monster["speed"]
-		# 	monst_move = False
-	#	if (counter < random.randint(1, 4) * 30):
-	# 	monster["x"] += random.randint(0, monster["speed"])
-	# 	monster["y"] += random.randint(0, monster["speed"])
-		 # 	if (monster["x"] > screen_width - img_dim):
-		 # 		monster["x"] -= monster["speed"]
-		 # 	if (monster["x"] < 0):
-			# 	monster["x"] += monster["speed"]
-			# if (monster["y"] > screen_height - img_dim):
-			# 	monster["y"] -= monster["speed"]
-			# if (monster["y"] < 0):
-			# 	monster["y"] += monster["speed"]
-	# else:
-	# 	counter = 0
-	#	monst_move = False
 	# COLLISION DETECTION
 	distance_between = fabs(hero['x'] - goblin['x']) + fabs(hero['y'] - goblin['y'])
 	# If we get the "goblin"
@@ -318,3 +250,16 @@ while game_on:
 
 # 7. Repeat 6 over and over...
 	pygame.display.flip()
+
+# # Move the bad guy (in class code)
+# dx = goblin['x'] - hero['x']
+# dy = goblin['y'] - hero['y']
+# dist = hypot(dx, dy)
+# # print dist
+# dx = dx / dist
+# dy = dy / dist
+# # print dx, dy
+# goblin['x'] -= dx * goblin['speed']
+# goblin['y'] -= dy * goblin['speed']
+
+
